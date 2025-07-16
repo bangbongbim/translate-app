@@ -17,14 +17,14 @@ export function showFloatingModal() {
     }
 
     floatingModal = new BrowserWindow({
-        width: 400,
-        height: 200,
+        width: 500,
+        height: 300,
         x: cursor.x + 10,
         y: cursor.y + 10,
-        frame: false,
-        transparent: true,
+        frame: true,
+        transparent: false,
         alwaysOnTop: true,
-        resizable: false,
+        resizable: true,
         skipTaskbar: true,
         focusable: true,
         webPreferences: {

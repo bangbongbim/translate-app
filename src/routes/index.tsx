@@ -8,8 +8,8 @@ export const router = createHashRouter([
         element: <Outlet />,
         children: [
             {
-                index: true, // 기본 경로
-                element: <App />, // "/" → App 렌더링
+                index: true,
+                element: <App />,
             },
             {
                 path: '/translate-modal',

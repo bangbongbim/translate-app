@@ -1,4 +1,4 @@
-import { screen, BrowserWindow, app, globalShortcut } from "electron";
+import { screen, BrowserWindow, globalShortcut, app } from "electron";
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
@@ -11,14 +11,14 @@ function showFloatingModal() {
     floatingModal.close();
   }
   floatingModal = new BrowserWindow({
-    width: 400,
-    height: 200,
+    width: 500,
+    height: 300,
     x: cursor.x + 10,
     y: cursor.y + 10,
-    frame: false,
-    transparent: true,
+    frame: true,
+    transparent: false,
     alwaysOnTop: true,
-    resizable: false,
+    resizable: true,
     skipTaskbar: true,
     focusable: true,
     webPreferences: {
@@ -28,6 +28,18 @@ function showFloatingModal() {
   });
   floatingModal.loadURL(`${VITE_DEV_SERVER_URL}#/translate-modal`);
 }
+const registerGlobalShortcuts = (shortcut, callback) => {
+  try {
+    const success = globalShortcut.register(shortcut, callback);
+    if (!success) {
+      console.error(`❌ 단축키 등록 실패: "${shortcut}"`);
+    } else {
+      console.log(`✅ 단축키 등록 성공: "${shortcut}"`);
+    }
+  } catch (err) {
+    console.error(`❌ 단축키 등록 중 예외 발생: ${shortcut}`, err);
+  }
+};
 createRequire(import.meta.url);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 process.env.APP_ROOT = path.join(__dirname, "..");
@@ -53,16 +65,11 @@ function createWindow() {
     win.loadFile(path.join(RENDERER_DIST, "index.html"));
   }
   app.whenReady().then(() => {
-    const success = globalShortcut.register("CommandOrControl+Shift+T", () => {
+    registerGlobalShortcuts("CommandOrControl+Shift+T", () => {
       const cursor = screen.getCursorScreenPoint();
       showFloatingModal();
       win == null ? void 0 : win.webContents.send("toggle-translate-modal", cursor);
     });
-    if (!success) {
-      console.error("❌ 글로벌 단축키 등록 실패");
-    } else {
-      console.log("✅ 단축키 등록 성공");
-    }
   });
 }
 app.on("window-all-closed", () => {

@@ -3,6 +3,7 @@ import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { showFloatingModal } from './window';
+import { registerGlobalShortcuts } from './utils/shortcut-utils';
 
 const require = createRequire(import.meta.url);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -50,19 +51,11 @@ function createWindow() {
 
     // ✅ 글로벌 단축키 등록
     app.whenReady().then(() => {
-        const success = globalShortcut.register('CommandOrControl+Shift+T', () => {
+        registerGlobalShortcuts('CommandOrControl+Shift+T', () => {
             const cursor = screen.getCursorScreenPoint();
-
             showFloatingModal();
-
             win?.webContents.send('toggle-translate-modal', cursor);
         });
-
-        if (!success) {
-            console.error('❌ 글로벌 단축키 등록 실패');
-        } else {
-            console.log('✅ 단축키 등록 성공');
-        }
     });
 }
 
