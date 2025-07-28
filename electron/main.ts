@@ -1,4 +1,4 @@
-import { app, BrowserWindow, globalShortcut, screen } from 'electron';
+import { app, BrowserWindow, Menu, screen, Tray } from 'electron';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
@@ -27,13 +27,43 @@ export const RENDERER_DIST = path.join(process.env.APP_ROOT, 'dist');
 process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL ? path.join(process.env.APP_ROOT, 'public') : RENDERER_DIST;
 
 let win: BrowserWindow | null;
+let tray: Tray | null = null;
+let isQuiting: boolean = false;
 
 function createWindow() {
     win = new BrowserWindow({
+        width: 780,
+        height: 500,
         icon: path.join(process.env.VITE_PUBLIC, 'electron-vite.svg'),
         webPreferences: {
             preload: path.join(__dirname, 'preload.mjs'),
         },
+    });
+    // 트레이 아이콘 등록 (최초 1회만)
+    if (!tray) {
+        tray = new Tray(path.join(process.env.VITE_PUBLIC, 'tray-icon.png')); // 아이콘 파일 경로
+        const contextMenu = Menu.buildFromTemplate([
+            { label: '열기', click: () => win?.show() },
+            { label: '종료', click: () => app.quit() },
+        ]);
+        tray.setToolTip('번역 앱');
+        tray.setContextMenu(contextMenu);
+
+        tray.on('click', () => {
+            win?.isVisible() ? win.hide() : win?.show();
+        });
+    }
+
+    app.on('before-quit', () => {
+        isQuiting = true;
+    });
+
+    win.on('close', (event) => {
+        if (!isQuiting) {
+            event.preventDefault();
+            win?.hide();
+        }
+        // isQuiting === true 이면 그냥 종료 허용
     });
 
     // Test active push message to Renderer-process.
@@ -43,7 +73,7 @@ function createWindow() {
 
     if (VITE_DEV_SERVER_URL) {
         win.loadURL(VITE_DEV_SERVER_URL);
-        win.webContents.openDevTools(); // 👈 이 줄 추가!
+        // win.webContents.openDevTools();
     } else {
         // win.loadFile('dist/index.html')
         win.loadFile(path.join(RENDERER_DIST, 'index.html'));
@@ -53,6 +83,7 @@ function createWindow() {
     app.whenReady().then(() => {
         registerGlobalShortcuts('CommandOrControl+Shift+T', () => {
             const cursor = screen.getCursorScreenPoint();
+
             showFloatingModal();
             win?.webContents.send('toggle-translate-modal', cursor);
         });

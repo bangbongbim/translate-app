@@ -13,8 +13,8 @@ const LANGS = [
 export default function TranslateModal() {
     const [text, setText] = useState('');
     const [translatedText, setTranslatedText] = useState('');
-    const [sourceLang, setSourceLang] = useState('ko');
-    const [targetLang, setTargetLang] = useState('en');
+    const [sourceLang, setSourceLang] = useState('en');
+    const [targetLang, setTargetLang] = useState('ko');
 
     const translateText = async () => {
         try {
@@ -30,7 +30,7 @@ export default function TranslateModal() {
     };
 
     return (
-        <div className="flex flex-col w-[500px] p-5 items-center h-full justify-center">
+        <div className="flex flex-col w-[500px] h-[300px] p-5 items-center  justify-center">
             <div className="flex flex-col gap-3 w-full h-f bg-white border shadow-xl rounded-2xl p-4 text-black space-y-3">
                 {/* 언어 선택 드롭다운 */}
                 <div className="flex gap-2 items-center justify-center mb-1">
