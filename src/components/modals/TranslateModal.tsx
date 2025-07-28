@@ -1,32 +1,74 @@
-import { Button } from '@/components/ui/button';
 import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { getTranslateText } from '@/api/translate/translate';
+
+const LANGS = [
+    { code: 'ko', label: '한국어' },
+    { code: 'en', label: '영어' },
+    { code: 'ja', label: '일본어' },
+    { code: 'zh-CN', label: '중국어' },
+    // 필요에 따라 추가
+];
 
 export default function TranslateModal() {
-    const [originalText, setOriginalText] = useState<string>('');
+    const [text, setText] = useState('');
+    const [translatedText, setTranslatedText] = useState('');
+    const [sourceLang, setSourceLang] = useState('ko');
+    const [targetLang, setTargetLang] = useState('en');
+
+    const translateText = async () => {
+        try {
+            const result = await getTranslateText({
+                text,
+                source: sourceLang,
+                target: targetLang,
+            });
+            setTranslatedText(result.message.result.translatedText);
+        } catch (err) {
+            setTranslatedText('번역 실패');
+        }
+    };
+
     return (
-        <div className="flex flex-col w-[500px] p-5 items-center  h-full justify-center">
-            <div className="flex flex-col gap-3 w-full h-[200px] bg-white border shadow-xl rounded-2xl p-4 text-black space-y-3">
-                {/* 닫기 버튼 */}
+        <div className="flex flex-col w-[500px] p-5 items-center h-full justify-center">
+            <div className="flex flex-col gap-3 w-full h-f bg-white border shadow-xl rounded-2xl p-4 text-black space-y-3">
+                {/* 언어 선택 드롭다운 */}
+                <div className="flex gap-2 items-center justify-center mb-1">
+                    <select className="border rounded px-2 py-1 text-sm" value={sourceLang} onChange={(e) => setSourceLang(e.target.value)}>
+                        {LANGS.map((lang) => (
+                            <option key={lang.code} value={lang.code}>
+                                {lang.label}
+                            </option>
+                        ))}
+                    </select>
+                    <span className="text-gray-400 font-bold text-base">→</span>
+                    <select className="border rounded px-2 py-1 text-sm" value={targetLang} onChange={(e) => setTargetLang(e.target.value)}>
+                        {LANGS.map((lang) => (
+                            <option key={lang.code} value={lang.code}>
+                                {lang.label}
+                            </option>
+                        ))}
+                    </select>
+                </div>
 
                 {/* 입력 영역 */}
                 <textarea
                     autoFocus
                     className="w-full h-[100px] resize-none rounded border px-2 py-1 outline-none"
                     placeholder="번역할 텍스트 입력..."
-                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setOriginalText(e.target.value)}
+                    onChange={(e) => setText(e.target.value)}
+                    value={text}
                 />
 
                 {/* 번역 버튼 */}
                 <div className="flex justify-center">
-                    <Button variant="outline" size="sm">
+                    <Button variant="outline" size="sm" onClick={translateText}>
                         번역하기
                     </Button>
                 </div>
 
                 {/* 번역 결과 영역 */}
-                <div className="w-full h-[100px] bg-gray-100 border text-sm rounded px-2 py-1 overflow-y-auto">
-                    번역된 텍스트가 여기에 표시됩니다.
-                </div>
+                <div className="w-full h-[100px] bg-gray-100 border text-sm rounded px-2 py-1 overflow-y-auto">{translatedText}</div>
             </div>
         </div>
     );

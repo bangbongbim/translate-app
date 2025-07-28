@@ -26,6 +26,7 @@ function showFloatingModal() {
       contextIsolation: true
     }
   });
+  floatingModal.webContents.openDevTools();
   floatingModal.loadURL(`${VITE_DEV_SERVER_URL}#/translate-modal`);
 }
 const registerGlobalShortcuts = (shortcut, callback) => {

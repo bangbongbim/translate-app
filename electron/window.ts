@@ -32,6 +32,6 @@ export function showFloatingModal() {
             contextIsolation: true,
         },
     });
-
+    floatingModal.webContents.openDevTools(); // 👈 이 줄 추가!
     floatingModal.loadURL(`${VITE_DEV_SERVER_URL}#/translate-modal`);
 }
