@@ -1,20 +1,29 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { getTranslateText } from '@/api/translate/translate';
-
-const LANGS = [
-    { code: 'ko', label: '한국어' },
-    { code: 'en', label: '영어' },
-    { code: 'ja', label: '일본어' },
-    { code: 'zh-CN', label: '중국어' },
-    // 필요에 따라 추가
-];
+import { sourceLangs, targetLangsForCn, targetLangsForEn, targetLangsForJa, targetLangsForKo } from '@/\bconstants/languages';
 
 export default function TranslateModal() {
     const [text, setText] = useState('');
     const [translatedText, setTranslatedText] = useState('');
     const [sourceLang, setSourceLang] = useState('en');
     const [targetLang, setTargetLang] = useState('ko');
+
+    const targetLangList = useMemo(() => {
+        switch (sourceLang) {
+            case 'ko':
+                return targetLangsForKo;
+            case 'en':
+                return targetLangsForEn;
+            case 'ja':
+                return targetLangsForJa;
+            case 'zh-CN':
+                return targetLangsForCn;
+            // 필요시 다른 source 언어도 추가
+            default:
+                return [];
+        }
+    }, [sourceLang]);
 
     const translateText = async () => {
         try {
@@ -35,7 +44,7 @@ export default function TranslateModal() {
                 {/* 언어 선택 드롭다운 */}
                 <div className="flex gap-2 items-center justify-center">
                     <select className="border rounded px-2 py-1 text-sm" value={sourceLang} onChange={(e) => setSourceLang(e.target.value)}>
-                        {LANGS.map((lang) => (
+                        {sourceLangs.map((lang) => (
                             <option key={lang.code} value={lang.code}>
                                 {lang.label}
                             </option>
@@ -43,7 +52,7 @@ export default function TranslateModal() {
                     </select>
                     <span className="text-gray-400 font-bold text-base">→</span>
                     <select className="border rounded px-2 py-1 text-sm" value={targetLang} onChange={(e) => setTargetLang(e.target.value)}>
-                        {LANGS.map((lang) => (
+                        {targetLangList.map((lang) => (
                             <option key={lang.code} value={lang.code}>
                                 {lang.label}
                             </option>
