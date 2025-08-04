@@ -27,6 +27,7 @@ function showFloatingModal() {
     floatingModal.on("closed", () => {
       floatingModal = null;
     });
+    floatingModal.webContents.openDevTools();
     floatingModal.loadURL(`${VITE_DEV_SERVER_URL}#/translate-modal`);
   } else {
     floatingModal.setPosition(cursor.x + 10, cursor.y + 10);

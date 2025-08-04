@@ -1,24 +1,6 @@
+import { TranslateRequest } from '@/interfaces/translate/TranslateRequest';
 import { translateAxios } from '../axios/translate-axios';
-
-export interface TranslateRequest {
-    text: string;
-    source: string;
-    target: string;
-}
-
-export interface TranslateResult {
-    srcLangType: string;
-    tarLangType: string;
-    translatedText: string;
-}
-
-export interface TranslateMessage {
-    result: TranslateResult;
-}
-
-export interface TranslateResponse {
-    message: TranslateMessage;
-}
+import { TranslateResponse } from '@/interfaces/translate/TranslateRespnse';
 
 export const getTranslateText = async (translateRequest: TranslateRequest): Promise<TranslateResponse> => {
     try {

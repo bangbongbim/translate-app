@@ -34,7 +34,7 @@ export function showFloatingModal() {
         floatingModal.on('closed', () => {
             floatingModal = null;
         });
-
+        floatingModal.webContents.openDevTools();
         floatingModal.loadURL(`${VITE_DEV_SERVER_URL}#/translate-modal`);
     } else {
         // 이미 열려있는 경우 위치만 업데이트하고 띄우기
